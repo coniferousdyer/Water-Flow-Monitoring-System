@@ -3,15 +3,15 @@ import dynamic from "next/dynamic";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import { useState } from "react";
 
 const DowntimeChart = ({ data }) => {
-  // Start and end dates set by the user to filter the graph data.
+  // Start and end date-times set by the user to filter the graph data.
   const [dateTimes, setDateTimes] = useState({
-    startDateTime: null, // We set the start date to null to indicate that the user has not set it.
+    startDateTime: null, // We set the start date-time to null to indicate that the user has not set it.
     endDateTime: new Date(),
   });
 
@@ -46,7 +46,7 @@ const DowntimeChart = ({ data }) => {
       },
     },
     title: {
-      text: "Daily Downtime",
+      text: "Hourly Downtime",
     },
     dataLabels: {
       enabled: false,
@@ -62,7 +62,7 @@ const DowntimeChart = ({ data }) => {
     yaxis: [
       {
         title: {
-          text: "Downtime (sec)",
+          text: "Downtime (msec)",
           rotate: -90,
         },
       },
@@ -102,13 +102,19 @@ const DowntimeChart = ({ data }) => {
   const filterData = () => {
     return [
       {
-        name: "Downtime in sec",
+        name: "Downtime in msec",
         data: data.wifi_information
           .map((value, index) => {
-            return {
-              x: new Date(data.times[index]).getTime(),
-              y: value,
-            };
+            if (value !== null)
+              return {
+                x: new Date(data.times[index]).getTime(),
+                y: value,
+              };
+            else
+              return {
+                x: new Date(data.times[index]).getTime(),
+                y: 0,
+              };
           })
           .filter(
             (datetime) =>
@@ -127,8 +133,8 @@ const DowntimeChart = ({ data }) => {
         <Paper elevation={5} className={styles["paper-container"]}>
           <Chart options={options} series={filterData()} height={350} />
           <div className={styles["datetime-input-container"]}>
-            {/* Start date input */}
-            <DatePicker
+            {/* Start date-time input */}
+            <DateTimePicker
               renderInput={(props) => <TextField {...props} />}
               label="Start Date"
               value={dateTimes.startDateTime}
@@ -137,7 +143,7 @@ const DowntimeChart = ({ data }) => {
               }}
             />
             {/* End date input */}
-            <DatePicker
+            <DateTimePicker
               renderInput={(props) => <TextField {...props} />}
               label="End Date"
               value={dateTimes.endDateTime}

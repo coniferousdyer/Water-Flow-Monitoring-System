@@ -25,7 +25,7 @@ const StyledTableCell = styled(TableCell)(({ statuscolor }) => ({
   },
 }));
 
-const StatusTable = ({ statusList }) => {
+const StatusTable = ({ statusData }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -64,24 +64,41 @@ const StatusTable = ({ statusList }) => {
           <TableHead>
             <TableRow>
               <StyledTableHeading>Time</StyledTableHeading>
-              <StyledTableHeading>Status</StyledTableHeading>
+              <StyledTableHeading>oM2M Status</StyledTableHeading>
+              <StyledTableHeading>Thingspeak Status</StyledTableHeading>
             </TableRow>
           </TableHead>
           <TableBody>
-            {statusList
-              .reverse()
-              .slice(0, numberOfEntries)
+            {statusData.oneM2M
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((status, index) => {
                 return (
-                  <TableRow key={index}>
-                    <TableCell>{status.created_at}</TableCell>
+                  <TableRow key={page * rowsPerPage + index}>
+                    <TableCell>
+                      {statusData.times[page * rowsPerPage + index]}
+                    </TableCell>
                     <StyledTableCell
                       statuscolor={
-                        statusColor[parseInt(status.field1 / 100) - 1]
+                        statusColor[
+                          parseInt(
+                            statusData.oneM2M[page * rowsPerPage + index] / 100
+                          ) - 1
+                        ]
                       }
                     >
-                      {status.field1}
+                      {statusData.oneM2M[page * rowsPerPage + index]}
+                    </StyledTableCell>
+                    <StyledTableCell
+                      statuscolor={
+                        statusColor[
+                          parseInt(
+                            statusData.thingSpeak[page * rowsPerPage + index] /
+                              100
+                          ) - 1
+                        ]
+                      }
+                    >
+                      {statusData.thingSpeak[page * rowsPerPage + index]}
                     </StyledTableCell>
                   </TableRow>
                 );

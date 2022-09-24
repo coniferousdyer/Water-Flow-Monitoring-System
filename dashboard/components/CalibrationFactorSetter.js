@@ -16,12 +16,24 @@ const CalibrationFactorSetter = ({ calibrationFactor }) => {
   };
 
   // Handles submission of calibration factor.
-  const handleCalibrationFactorSubmit = (event) => {
+  const handleCalibrationFactorSubmit = async (event) => {
     event.preventDefault();
 
     // Update the calibration factor reading on Thingspeak via the backend server.
-    // await axios.post(
-  
+    axios
+      .get(process.env.NEXT_PUBLIC_THINGSPEAK_CALIBRATION_FACTOR_URL, {
+        params: {
+          api_key: process.env.NEXT_PUBLIC_THINGSPEAK_API_KEY,
+          field3: parseFloat(calibrationFactorInput), // Change field number here accordingly.
+        },
+      })
+      .then(() => {
+        alert("Calibration factor updated successfully.");
+      })
+      .catch(() => {
+        alert("Error: Calibration factor could not be updated successfully.");
+      });
+
     setCalibrationFactorInput(calibrationFactorInput);
   };
 
@@ -38,7 +50,6 @@ const CalibrationFactorSetter = ({ calibrationFactor }) => {
         <Button
           variant="contained"
           color="primary"
-          
           onClick={handleCalibrationFactorSubmit}
           className={styles["calibration-factor-setter-button"]}
         >

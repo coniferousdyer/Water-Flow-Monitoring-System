@@ -150,14 +150,9 @@ export default function Admin({ data }) {
 
         <CalibrationFactorSetter calibrationFactor={data.calibrationFactor} />
 
-        <StatusTable statusList={data.statusList} />
+        <StatusTable statusData={data.statusData} />
 
-        <DowntimeChart
-          data={{
-            wifi_information: data.wifiInformation.map((datum) => datum.field1),
-            times: data.wifiInformation.map((datum) => datum.created_at),
-          }}
-        />
+        <DowntimeChart data={data.wifiInformation} />
       </div>
     );
   }
@@ -165,46 +160,66 @@ export default function Admin({ data }) {
 
 // Fetching update statuses and WiFi information from the Thingspeak API.
 export const getServerSideProps = async () => {
-  //   const statusData = await axios.get(process.env.THINGSPEAK_API_ADMIN_STATUS_URL);
-  //   const wifiData = await axios.get(process.env.THINGSPEAK_API_ADMIN_WIFI_URL);
-  //   const calibrationFactorData = await axios.get(process.env.THINGSPEAK_API_ADMIN_CALIBRATION_FACTOR_URL);
+  const statusData = await axios.get(
+    process.env.THINGSPEAK_API_ADMIN_STATUS_URL
+  );
+  const wifiData = await axios.get(process.env.THINGSPEAK_API_ADMIN_WIFI_URL);
+  const calibrationFactorData = await axios.get(
+    process.env.THINGSPEAK_API_ADMIN_CALIBRATION_FACTOR_URL
+  );
 
-  const statusData = {
-    data: {
-      feeds: [
-        { created_at: "1-1-2022", field1: 500 },
-        { created_at: "1-1-2022", field1: 403 },
-        { created_at: "1-1-2022", field1: 100 },
-        { created_at: "1-1-2022", field1: 505 },
-        { created_at: "1-1-2022", field1: 200 },
-        { created_at: "1-1-2022", field1: 301 },
-      ],
-    },
-  };
-  const wifiData = {
-    data: {
-      feeds: [
-        { created_at: new Date("1-1-2022").toDateString(), field1: 200 },
-        { created_at: new Date("2-1-2022").toDateString(), field1: 100 },
-        { created_at: new Date("3-1-2022").toDateString(), field1: 400 },
-        { created_at: new Date("4-1-2022").toDateString(), field1: 300 },
-        { created_at: new Date("5-1-2022").toDateString(), field1: 500 },
-      ],
-    },
-  };
-  const calibrationFactorData = {
-    data: {
-      feeds: [{ created_at: new Date("1-1-2022").toDateString(), field1: 1 }],
-    },
-  };
+  // Getting last valid calibration factor.
+  let lastValidCF;
+  for (let i = 0; i < calibrationFactorData.data.feeds.length; i++)
+    if (calibrationFactorData.data.feeds[i].field3 !== null)
+      lastValidCF = calibrationFactorData.data.feeds[i].field3;
+
+  // Splitting WiFi information into corresponding arrays.
+  const wifiTimes = wifiData.data.feeds.map((datum) => datum.created_at);
+  const wifiInformation = wifiData.data.feeds.map((datum) => datum.field6);
+
+  // Splitting status code information into corresponding arrays.
+  let oneM2M = [],
+    thingSpeak = [],
+    statusTimes = [];
+  for (let i = statusData.data.feeds.length - 1; i >= 0; i--) {
+    if (statusData.data.feeds[i].field4) {
+      let oneM2MStatusCodesObtained = statusData.data.feeds[i].field4
+        .split(",")
+        .reverse();
+      let thingSpeakStatusCodesObtained = statusData.data.feeds[i].field5
+        .split(",")
+        .reverse();
+
+      for (let j = oneM2MStatusCodesObtained.length - 1; j >= 0; j--) {
+        if (
+          !parseInt(oneM2MStatusCodesObtained[j]) ||
+          !parseInt(thingSpeakStatusCodesObtained[j])
+        )
+          continue;
+
+        oneM2M.push(parseInt(oneM2MStatusCodesObtained[j]));
+        thingSpeak.push(parseInt(thingSpeakStatusCodesObtained[j]));
+        statusTimes.push(statusData.data.feeds[i].created_at);
+
+        if (oneM2M.length >= 50) break;
+      }
+
+      if (oneM2M.length >= 50) break;
+    }
+  }
 
   const data = {
-    statusList: statusData.data.feeds,
-    wifiInformation: wifiData.data.feeds,
-    calibrationFactor:
-      calibrationFactorData.data.feeds[
-        calibrationFactorData.data.feeds.length - 1
-      ].field1,
+    statusData: {
+      times: statusTimes,
+      oneM2M,
+      thingSpeak,
+    },
+    wifiInformation: {
+      times: wifiTimes,
+      wifi_information: wifiInformation,
+    },
+    calibrationFactor: lastValidCF,
   };
 
   return {
