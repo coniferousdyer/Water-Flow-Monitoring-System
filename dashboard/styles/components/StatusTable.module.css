@@ -1,0 +1,10 @@
+.status-table-container {
+    padding: 1.5vw;
+    margin-top: 1vw;
+}
+
+@media screen and (max-width: 600px) {
+    .status-table-container {
+        margin-top: 10vw;
+    }
+}

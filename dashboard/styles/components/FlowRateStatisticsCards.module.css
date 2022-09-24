@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+.flow-rate-statistics-card-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.statistics-card-container {
+    width: 24%;
+}
+
+.card-key {
+    font-family: "Roboto", sans-serif;
+    font-size: 1vw;
+    font-weight: bold;
+    margin: 0 0 0.5vw 0;
+}
+
+.card-value {
+    font-family: "Roboto", sans-serif;
+    font-size: 3.5vw;
+    font-weight: bold;
+    margin: 0;
+}
+
+@media screen and (min-width: 600px) and (max-width: 1220px) {
+    .flow-rate-statistics-card-container {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .statistics-card-container {
+      width: 49.5%;
+      margin-top: 1vw;
+    }
+  
+    .card-key {
+      font-size: 2vw;
+    }
+  
+    .card-value {
+      font-size: 3.5vw;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .flow-rate-statistics-card-container {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .statistics-card-container {
+      width: 49.5%;
+      margin-top: 1vw;
+    }
+  
+    .card-key {
+      font-size: 3vw;
+    }
+  
+    .card-value {
+      font-size: 10vw;
+    }
+}

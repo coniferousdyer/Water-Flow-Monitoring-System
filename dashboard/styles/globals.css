@@ -15,6 +15,14 @@ a {
   box-sizing: border-box;
 }
 
+.chart-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 1.5vw;
+  justify-content: space-between;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

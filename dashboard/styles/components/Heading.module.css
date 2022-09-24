@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;700&display=swap');
+
+.heading_container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5vw;
+    margin-top: 3vw;
+    color: black;
+}
+  
+.heading_prefix {
+    margin: 0 0 -1vw;
+    font-family: "Poppins", sans-serif;
+    font-weight: 200;
+    font-size: 2vw;
+}
+  
+.heading_suffix {
+    margin-top: 3rem;
+    font-style: italic;
+    font-family: "Poppins", sans-serif;
+    font-weight: 200;
+    font-size: 1vw;
+    color: grey;
+}
+  
+.heading_name {
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    font-size: 5vw;
+}
+  
+@media screen and (min-width: 600px) and (max-width: 900px) {
+    .heading_container {
+      margin-top: 5vw;
+    }
+
+    .heading_prefix {
+      font-size: 3vw;
+    }
+  
+    .heading_name {
+      font-size: 7vw;
+    }
+  
+    .heading_suffix {
+      font-size: 2vw;
+    }
+}
+  
+@media screen and (max-width: 600px) {
+    .heading_container {
+      margin-top: 10vw;
+    }
+  
+    .heading_prefix {
+      font-size: 5vw;
+    }
+  
+    .heading_name {
+      font-size: 10vw;
+    }
+  
+    .heading_suffix {
+      font-size: 3vw;
+    }
+}

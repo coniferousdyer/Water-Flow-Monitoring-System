@@ -1,0 +1,21 @@
+.time-chart-container {
+    width: 49.3%;
+}
+
+.datetime-input-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 2vw;
+}
+
+.paper-container {
+    padding: 1.5vw;
+}
+
+@media screen and (max-width: 600px) {
+    .time-chart-container {
+        width: 100%;
+        margin-top: 10vw;
+    }
+}
