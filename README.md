@@ -19,15 +19,13 @@ This is the code for an IoT-based system to monitor the water flow in a specific
     - Viewing WiFi downtime at the deployment site.
     - Viewing status codes of requests made to OneM2M/ThingSpeak from the microcontroller.
 
-For more detailed information about the hardware and software setup, view `report.pdf`.
-
 ## Setup
 
 The following instructions assume prior experience working with Arduino and microcontrollers.
 
 ### Hardware
 
-1. The circuit diagram is given in the report. For more information regarding the specifications and connections of the YF-S201 SEA water flow sensor, which we used, refer to [this](https://components101.com/sensors/yf-s201-water-flow-measurement-sensor). 
+1. For more information regarding the specifications and connections to the microcontroller of the YF-S201 SEA water flow sensor, which we used, refer to [this](https://components101.com/sensors/yf-s201-water-flow-measurement-sensor). The microcontroller would also be have to be connected to an OLED display.
 
 2. You will then have to enter the missing details in the code file (`arduino/ESP32.ino`), which have a comment starting with `// Replace with` next to them.
 
