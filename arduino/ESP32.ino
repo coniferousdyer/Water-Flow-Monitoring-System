@@ -28,13 +28,13 @@ Adafruit_SH1106G display = Adafruit_SH1106G(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, 
 #define LOGO16_GLCD_HEIGHT 16
 #define LOGO16_GLCD_WIDTH 16
 
-const char *ssid = "";  // replace with your wifi ssid and wpa2 key
+const char *ssid = ""; // Replace with your WiFi SSID and password.
 const char *pass = "";
 
 const char *server = "api.thingspeak.com";
 
 // om2m
-String server2 = "http://esw-onem2m.iiit.ac.in:443/~/in-cse/in-name/Team-3/Node-2/Data/";
+String server2 = ""; // Replace with OneM2M server URL.
 String ae = "Test-AE";
 String cnt = "Node-1";
 
@@ -68,7 +68,8 @@ long cf_set = 0;
 long cf_set_interval = 60 * 60 * 1000;
 long wifiDownTime = 0;
 
-void IRAM_ATTR pulseCounter() {
+void IRAM_ATTR pulseCounter()
+{
     pulseCount++;
 }
 
@@ -76,13 +77,15 @@ WiFiClient client;
 
 int keyIndex = 0;
 unsigned long myChannelNumber = Enter channel number;
-const char *myWriteAPIKey = "Enter write API key";
-const char *myReadAPIKey = "Enter read API key";
+const char *myWriteAPIKey = ""; // Replace with write API key of ThingSpeak channel.
+const char *myReadAPIKey = "";  // Replace with read API key of ThingSpeak channel.
 
-void setup() {
+void setup()
+{
     // Init Serial
     Serial.begin(115200);
-    while (!Serial) {
+    while (!Serial)
+    {
     }
 
     // OLED
@@ -95,10 +98,12 @@ void setup() {
     // Init WIFI and print details
     WiFi.begin(ssid, pass);
     long connectStart = millis();
-    while (WiFi.status() != WL_CONNECTED) {
+    while (WiFi.status() != WL_CONNECTED)
+    {
         Serial.println("Not Connected....");
         delay(500);
-        if (WiFi.status() != WL_CONNECTED && millis() - connectStart >= wifiConnectionInterval) {
+        if (WiFi.status() != WL_CONNECTED && millis() - connectStart >= wifiConnectionInterval)
+        {
             WiFiStatus = 0;
             break;
         }
@@ -107,7 +112,8 @@ void setup() {
     Serial.println("Connected......");
     Serial.print("IP Address: ");
     Serial.println(WiFi.localIP());
-    if (WiFi.status() == WL_CONNECTED) {
+    if (WiFi.status() == WL_CONNECTED)
+    {
         WiFiStatus = 1;
         displayOled(flowInMlPerSec, 0, 1);
     }
@@ -124,7 +130,8 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(SENSOR), pulseCounter, FALLING);
 }
 
-void createCI(String &val) {
+void createCI(String &val)
+{
     // add the lines in step 3-6 inside this function
     //  client.setInsecure();
     HTTPClient http;
@@ -134,9 +141,11 @@ void createCI(String &val) {
     int code = http.POST("{\"m2m:cin\": {\"cnf\":\"application/json\",\"con\": " + String(val) + "}}");
     Serial.print("OM2M Code: ");
     Serial.println(code);
-    if (code == -1) {
+    if (code == -1)
+    {
         Serial.println("UNABLE TO CONNECT TO THE SERVER");
-    } else
+    }
+    else
         om2mError = 0;
     if (code != 201)
         om2mError = 1;
@@ -144,17 +153,21 @@ void createCI(String &val) {
     http.end();
 }
 
-int cryptbase1 = 8620739;
-int cryptbase2 = 5916623;
+int cryptbase1 = ; // Replace with 2 large prime numbers for the encryption algorithm.
+int cryptbase2 = ;
 
-int encrypt(int number) {
+int encrypt(int number)
+{
     int val = (number + cryptbase1) ^ cryptbase2;
     return val;
 }
 
-void updateCodes() {
-    if (num_codes >= 50) {
-        for (int i = 0; i < 49; i++) {
+void updateCodes()
+{
+    if (num_codes >= 50)
+    {
+        for (int i = 0; i < 49; i++)
+        {
             om2mCodes[i] = om2mCodes[i + 1];
             thingSpeakCodes[i] = thingSpeakCodes[i + 1];
         }
@@ -165,14 +178,17 @@ void updateCodes() {
     num_codes += 1;
 }
 
-String to_string(int u) {
+String to_string(int u)
+{
     int neg = 0;
-    if (u < 0) {
+    if (u < 0)
+    {
         neg = 1;
         u *= (-1);
     }
     String num = "";
-    while (u != 0) {
+    while (u != 0)
+    {
         int rem = u % 10;
         u /= 10;
         num += (char)(rem + '0');
@@ -183,9 +199,11 @@ String to_string(int u) {
     return num;
 }
 
-void loop() {
+void loop()
+{
     currentMillis = millis();
-    if (currentMillis - previousMillis > interval) {
+    if (currentMillis - previousMillis > interval)
+    {
         // Calculating Flow Rate
         pulse1Sec = pulseCount;
         pulseCount = 0;
@@ -198,7 +216,7 @@ void loop() {
 
         // Displaying current values on Serial Monitor and OLED
         Serial.print("Flow rate: ");
-        Serial.print(int(flowInMlPerSec));  // Print the integer part of the variable
+        Serial.print(int(flowInMlPerSec)); // Print the integer part of the variable
         Serial.println("mL/sec");
         Serial.print("Output Liquid Quantity: ");
         Serial.print(totalMilliLitres);
@@ -207,27 +225,32 @@ void loop() {
     }
 
     // Send to ThingSpeak and OM2M
-    if (currentMillis >= nextPush) {
+    if (currentMillis >= nextPush)
+    {
         long connectStart = millis();
         WiFiStatus = 1;
-        while (WiFi.status() != WL_CONNECTED) {
+        while (WiFi.status() != WL_CONNECTED)
+        {
             Serial.println("Reconnecting to WiFi...");
             WiFi.disconnect();
             WiFi.reconnect();
             delay(500);
-            if (WiFi.status() != WL_CONNECTED && millis() - connectStart >= wifiConnectionInterval) {
+            if (WiFi.status() != WL_CONNECTED && millis() - connectStart >= wifiConnectionInterval)
+            {
                 WiFiStatus = 0;
                 break;
             }
         }
-        if (WiFiStatus == 1) {
+        if (WiFiStatus == 1)
+        {
             Serial.println("");
             Serial.println("Connected....");
             long averageFlowRate = (double)totalFlowRate / numberOfReadings;
             long volume = ((currentMillis - lastPushed) / 1000) * averageFlowRate;
             int x = 20;
             int itr = 0;
-            while (x != 200) {
+            while (x != 200)
+            {
                 int encavgFlowRate = encrypt(averageFlowRate);
                 int encvolume = encrypt(volume);
 
@@ -239,7 +262,8 @@ void loop() {
                 String val = String(averageFlowRate);
                 Serial.print("ThingSpeak Value: ");
                 Serial.println(x);
-                if (x == 200) {
+                if (x == 200)
+                {
                     Serial.print("Value pushed successfully: ");
                     Serial.print(averageFlowRate);
                     Serial.print(" : ");
@@ -248,7 +272,9 @@ void loop() {
                     totalFlowRate = 0;
                     lastPushed = currentMillis;
                     thingSpeakError = 0;
-                } else {
+                }
+                else
+                {
                     if (itr == 5)
                         break;
                     thingSpeakError = 1;
@@ -263,17 +289,21 @@ void loop() {
             String val = String(frate);
             createCI(val);
             updateCodes();
-        } else
+        }
+        else
             wifiDownTime += thingSpeakInterval;
         nextPush = millis() + thingSpeakInterval;
     }
-    if (millis() >= next_send_codes) {
+    if (millis() >= next_send_codes)
+    {
         int x = 20;
         int itr = 0;
-        while (x != 200) {
+        while (x != 200)
+        {
             String om2mStr = "";
             String thingSpeakStr = "";
-            for (int i = 0; i < num_codes; i++) {
+            for (int i = 0; i < num_codes; i++)
+            {
                 om2mStr += to_string(om2mCodes[i]);
                 om2mStr += ",";
                 thingSpeakStr += to_string(thingSpeakCodes[i]);
@@ -285,13 +315,16 @@ void loop() {
             ThingSpeak.setField(6, wifiDownTime);
 
             x = ThingSpeak.writeFields(myChannelNumber, myWriteAPIKey);
-            if (x == 200) {
+            if (x == 200)
+            {
                 num_codes = 0;
                 wifiDownTime = 0;
                 Serial.println("Codes published successfully.");
                 Serial.println(om2mStr);
                 Serial.println(thingSpeakStr);
-            } else {
+            }
+            else
+            {
                 if (itr == 5)
                     break;
                 itr += 1;
@@ -300,7 +333,8 @@ void loop() {
         }
         next_send_codes += code_send_interval;
     }
-    if (millis() >= cf_set) {
+    if (millis() >= cf_set)
+    {
         float cf1 = ThingSpeak.readFloatField(myChannelNumber, 3, myReadAPIKey);
         if (cf1 > 0 && cf1 < 20)
             calibrationFactor = cf1;
@@ -311,7 +345,8 @@ void loop() {
     }
 }
 
-void displayOled(int rate, int vol, int wifiStatus) {
+void displayOled(int rate, int vol, int wifiStatus)
+{
     display.clearDisplay();
     display.cp437(true);
     display.setCursor(0, 0);
