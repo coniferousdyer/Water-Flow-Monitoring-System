@@ -136,7 +136,7 @@ void createCI(String &val)
     //  client.setInsecure();
     HTTPClient http;
     http.begin(server2);
-    http.addHeader("X-M2M-Origin", "oHDovf:QV6yMJ");
+    http.addHeader("X-M2M-Origin", ""); // Replace with corresponding value for oM2M server.
     http.addHeader("Content-Type", "application/json;ty=4");
     int code = http.POST("{\"m2m:cin\": {\"cnf\":\"application/json\",\"con\": " + String(val) + "}}");
     Serial.print("OM2M Code: ");
