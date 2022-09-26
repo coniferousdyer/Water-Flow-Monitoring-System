@@ -8,58 +8,58 @@ const router = express.Router();
 const User = require("../models/user.model");
 
 // Add a user to the database
-router.post("/register", async (req, res) => {
-  try {
-    // Verify if the user doesn't already exist
-    const user = await User.findOne({ email: req.body.email });
-    if (user) {
-      return res.status(409).json({
-        error: "Email already exists",
-      });
-    }
+// router.post("/register", async (req, res) => {
+//   try {
+//     // Verify if the user doesn't already exist
+//     const user = await User.findOne({ email: req.body.email });
+//     if (user) {
+//       return res.status(409).json({
+//         error: "Email already exists",
+//       });
+//     }
 
-    // Create a new user
-    const new_user = new User({
-      name: req.body.name,
-      email: req.body.email,
-    });
+//     // Create a new user
+//     const new_user = new User({
+//       name: req.body.name,
+//       email: req.body.email,
+//     });
 
-    // Hash the password
-    const salt = await bcrypt.genSalt();
-    new_user.password = await bcrypt.hash(req.body.password, salt);
+//     // Hash the password
+//     const salt = await bcrypt.genSalt();
+//     new_user.password = await bcrypt.hash(req.body.password, salt);
 
-    // Create and assign a token
-    jwt.sign(
-      {
-        id: new_user._id,
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: process.env.JWT_EXPIRES_IN,
-      },
-      async (err, token) => {
-        if (err) {
-          return res.status(500).json({
-            error: "Error signing token",
-          });
-        }
+//     // Create and assign a token
+//     jwt.sign(
+//       {
+//         id: new_user._id,
+//       },
+//       process.env.JWT_SECRET,
+//       {
+//         expiresIn: process.env.JWT_EXPIRES_IN,
+//       },
+//       async (err, token) => {
+//         if (err) {
+//           return res.status(500).json({
+//             error: "Error signing token",
+//           });
+//         }
 
-        // Return the token and the user data
-        const saved_user = await new_user.save();
-        return res.status(201).json({
-          token: token,
-          user: {
-            name: saved_user.name,
-          },
-        });
-      }
-    );
-  } catch (err) {
-    return res.status(500).json({
-      error: err,
-    });
-  }
-});
+//         // Return the token and the user data
+//         const saved_user = await new_user.save();
+//         return res.status(201).json({
+//           token: token,
+//           user: {
+//             name: saved_user.name,
+//           },
+//         });
+//       }
+//     );
+//   } catch (err) {
+//     return res.status(500).json({
+//       error: err,
+//     });
+//   }
+// });
 
 // Verify user credentials
 router.post("/login", async (req, res) => {
